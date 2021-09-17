@@ -255,18 +255,41 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
     {{^isFile}}
     {{#required}}
     {{^isNullable}}
-    local_var_form_params.push(("{{{baseName}}}", {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string()));
+    {{^isArray}}
+    local_var_form_params.push(("{{{baseName}}}", {{{paramName}}}.to_string()));
+    {{/isArray}}
+    {{#isArray}}
+    for v in {{{paramName}}} {
+        local_var_form_params.push(("{{{baseName}}}", v.to_string()));
+    }
+    {{/isArray}}
     {{/isNullable}}
     {{#isNullable}}
     match {{{paramName}}} {
-        Some(local_var_param_value) => { local_var_form_params.push(("{{{baseName}}}", local_var_param_value{{#isArray}}.join(","){{/isArray}}.to_string())); },
+        Some(local_var_param_value) => {
+            {{^isArray}}
+            local_var_form_params.push(("{{{baseName}}}", local_var_param_value.to_string()));
+            {{/isArray}}
+            {{#isArray}}
+            for v in local_var_param_value {
+                local_var_form_params.push(("{{{baseName}}}", v.to_string()));
+            }
+            {{/isArray}}
+        },
         None => { local_var_form_params.push(("{{{baseName}}}", "")); },
     }
     {{/isNullable}}
     {{/required}}
     {{^required}}
     if let Some(local_var_param_value) = {{{paramName}}} {
-        local_var_form_params.push(("{{{baseName}}}", local_var_param_value{{#isArray}}.join(","){{/isArray}}.to_string()));
+        {{^isArray}}
+        local_var_form_params.push(("{{{baseName}}}", local_var_param_value.to_string()));
+        {{/isArray}}
+        {{#isArray}}
+        for v in local_var_param_value {
+            local_var_form_params.push(("{{{baseName}}}", v.to_string()));
+        }
+        {{/isArray}}
     }
     {{/required}}
     {{/isFile}}
