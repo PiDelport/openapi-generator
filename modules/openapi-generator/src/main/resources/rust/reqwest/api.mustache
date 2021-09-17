@@ -232,41 +232,41 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
     {{/isMultipart}}
     {{^isMultipart}}
     {{#hasFormParams}}
-    let mut local_var_form_params = std::collections::HashMap::new();
+    let mut local_var_form_params = Vec::new();
     {{#formParams}}
     {{#isFile}}
     {{#required}}
     {{^isNullable}}
-    local_var_form_params.insert("{{{baseName}}}", unimplemented!("File form param not supported with x-www-form-urlencoded content"));
+    local_var_form_params.push(("{{{baseName}}}", unimplemented!("File form param not supported with x-www-form-urlencoded content")));
     {{/isNullable}}
     {{#isNullable}}
     match {{{paramName}}} {
-        Some(local_var_param_value) => { local_var_form_params.insert("{{{baseName}}}", unimplemented!("File form param not supported with x-www-form-urlencoded content")); },
+        Some(local_var_param_value) => { local_var_form_params.push(("{{{baseName}}}", unimplemented!("File form param not supported with x-www-form-urlencoded content"))); },
         None => { unimplemented!("Required nullable file form param not supported with x-www-form-urlencoded content"); },
     }
     {{/isNullable}}
     {{/required}}
     {{^required}}
     if let Some(local_var_param_value) = {{{paramName}}} {
-        local_var_form_params.insert("{{{baseName}}}", unimplemented!("File form param not supported with x-www-form-urlencoded content"));
+        local_var_form_params.push(("{{{baseName}}}", unimplemented!("File form param not supported with x-www-form-urlencoded content")));
     }
     {{/required}}
     {{/isFile}}
     {{^isFile}}
     {{#required}}
     {{^isNullable}}
-    local_var_form_params.insert("{{{baseName}}}", {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
+    local_var_form_params.push(("{{{baseName}}}", {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string()));
     {{/isNullable}}
     {{#isNullable}}
     match {{{paramName}}} {
-        Some(local_var_param_value) => { local_var_form_params.insert("{{{baseName}}}", local_var_param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
-        None => { local_var_form_params.insert("{{{baseName}}}", ""); },
+        Some(local_var_param_value) => { local_var_form_params.push(("{{{baseName}}}", local_var_param_value{{#isArray}}.join(","){{/isArray}}.to_string())); },
+        None => { local_var_form_params.push(("{{{baseName}}}", "")); },
     }
     {{/isNullable}}
     {{/required}}
     {{^required}}
     if let Some(local_var_param_value) = {{{paramName}}} {
-        local_var_form_params.insert("{{{baseName}}}", local_var_param_value{{#isArray}}.join(","){{/isArray}}.to_string());
+        local_var_form_params.push(("{{{baseName}}}", local_var_param_value{{#isArray}}.join(","){{/isArray}}.to_string()));
     }
     {{/required}}
     {{/isFile}}
