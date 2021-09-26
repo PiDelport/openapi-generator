@@ -155,10 +155,7 @@ public class RustClientCodegen extends DefaultCodegen implements CodegenConfig {
         typeMapping.put("date", "string");
         typeMapping.put("DateTime", "String");
         typeMapping.put("password", "String");
-        // TODO(bcourtine): review file mapping.
-        // I tried to map as "std::io::File", but Reqwest multipart file requires a "AsRef<Path>" param.
-        // Getting a file from a Path is simple, but the opposite is difficult. So I map as "std::path::Path".
-        typeMapping.put("file", "std::path::PathBuf");
+        typeMapping.put("file", "Vec<u8>");
         typeMapping.put("binary", "crate::models::File");
         typeMapping.put("ByteArray", "String");
         typeMapping.put("object", "serde_json::Value");
