@@ -279,7 +279,6 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
     let {{^supportAsync}}mut {{/supportAsync}}local_var_resp = local_var_client.execute(local_var_req){{#supportAsync}}.await{{/supportAsync}}?;
 
     let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text(){{#supportAsync}}.await{{/supportAsync}}?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
         {{^supportMultipleResponses}}
@@ -287,15 +286,29 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
         Ok(())
         {{/returnType}}
         {{#returnType}}
+        {{#isResponseBinary}}
+        let local_var_content = local_var_resp.bytes(){{#supportAsync}}.await{{/supportAsync}}?;
+        Ok(local_var_content.to_vec())
+        {{/isResponseBinary}}
+        {{^isResponseBinary}}
+        let local_var_content = local_var_resp.text(){{#supportAsync}}.await{{/supportAsync}}?;
         serde_json::from_str(&local_var_content).map_err(Error::from)
+        {{/isResponseBinary}}
         {{/returnType}}
         {{/supportMultipleResponses}}
         {{#supportMultipleResponses}}
+        {{#isResponseBinary}}
+        unimplemented!("Binary response not supported with supportMultipleResponses")
+        {{/isResponseBinary}}
+        {{^isResponseBinary}}
+        let local_var_content = local_var_resp.text(){{#supportAsync}}.await{{/supportAsync}}?;
         let local_var_entity: Option<{{{operationIdCamelCase}}}Success> = serde_json::from_str(&local_var_content).ok();
         let local_var_result = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
         Ok(local_var_result)
+        {{/isResponseBinary}}
         {{/supportMultipleResponses}}
     } else {
+        let local_var_content = local_var_resp.text(){{#supportAsync}}.await{{/supportAsync}}?;
         let local_var_entity: Option<{{{operationIdCamelCase}}}Error> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
         Err(Error::ResponseError(local_var_error))
